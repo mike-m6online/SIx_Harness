@@ -1,0 +1,292 @@
+# CLAUDE.md — <FILL-IN: project name>
+
+**Project Location:** `<FILL-IN: absolute project path>`
+
+> Seeded by the SIx Harness kit (`templates/CLAUDE.md.template`). Replace
+> every `<FILL-IN: ...>` slot with project-specific content. The ⚠️ ABSOLUTE
+> RULE blocks below are the transferable constitution, extracted from a
+> project where each rule was earned the hard way — keep them, and add your
+> own project-specific rules alongside as they get earned.
+
+## 📚 CANONICAL ONBOARDING DOCS — READ FIRST
+
+<FILL-IN: list the 1–3 documents any new session, agent, or engineer must
+read before working here — a current-state synthesis, an operational plan,
+and a destination/architecture doc is the pattern that works. Say which one
+to read if there is only time for one.>
+
+## ⚠️ GROUND TRUTH HIERARCHY — TRUST THE FRESH TIER, VERIFY THE NARRATIVE TIER ⚠️
+
+Projects with a memory stack fail in **two opposite directions**, and both
+are memory failures: (a) rediscovering / re-proposing what already exists
+(perfect context injected, agent ignores it), and (b) acting on a decayed
+doc whose named symbol was since renamed/removed. The fix is not "trust
+everything" or "verify everything" — it is to know **which tier a claim came
+from** and treat it accordingly.
+
+**The tiers, most to least authoritative for "what is true now":**
+
+1. **Runtime / code = GROUND TRUTH.** Terminal + test output, and a fresh
+   `grep`/Read of the actual source. For "does X exist / how does X work /
+   what is the current value," the code IS the answer — read it; it beats
+   every doc.
+2. **Auto-derived, regenerated-THIS-session facts = TRUST (do not
+   re-derive).** Session-start hook output regenerated from the actual code
+   or index each session (project state renders, health-gate lines,
+   decisions digests). Treat them as authoritative; do NOT burn tokens
+   re-discovering what they already state.
+3. **Injected memory + narrative docs = STRONG PRIOR (use, but verify named
+   symbols before ACTING).** MEMORY.md, the memory files, checkpoints,
+   closure docs, specs/plans. They encode real prior decisions and are
+   usually right — **never treat a question as novel when the answer is
+   already here.** BUT they DECAY: a path/function/flag they name may have
+   been renamed, removed, or never merged. Before you ACT on a
+   narrative-named symbol (recommend it, build on it, cite it as current) —
+   verify it (grep the symbol / read the file / check git log).
+4. **Training knowledge = REFERENCE ONLY.** Always loses to 1–3.
+
+**The two rules pull in opposite directions BY DESIGN — apply both:**
+- **Don't rediscover.** When tiers 2–3 already establish a fact (a subsystem
+  exists, a decision was made, X was already built), USE it — do not
+  re-investigate or propose rebuilding it.
+- **Verify before acting on tier 3.** A checkpoint/MEMORY.md claim that
+  names a file/function/flag is a prior to confirm, not a fact to act on —
+  grep the symbol before you recommend or build on it.
+
+**Conflict resolution:** code/terminal (1) beats narrative (3) for what is
+true now; a fresh auto-derived fact (2) beats a stale narrative claim (3);
+narrative (3) beats training knowledge (4) for project context.
+
+## ⚠️ ABSOLUTE RULE — NO SHORTCUTS, NO "SIMPLEST FIX" ⚠️
+
+Do not default to the simplest fix. <FILL-IN: one sentence on why quick
+patches are expensive in THIS project — e.g. "this is a research-grade
+engine where quick patches create downstream bugs that take days to
+diagnose.">. Every fix must be the architecturally correct solution, not
+the fastest one. If the correct solution requires refactoring, refactor. If
+it requires rethinking the approach, say so. A conservative estimate that's
+"safe enough" is not acceptable — compute the actual correct value. Never
+use language like "the simplest fix," "quick patch," "conservative
+estimate," or "good enough for now." Every change must be something you'd
+defend in a code review against someone who understands the full
+architecture.
+
+## ⚠️ ABSOLUTE RULE — TIME IS WEIGHTLESS ⚠️
+
+**This is a marathon, not a sprint. Time is irrelevant to decision-making.
+Never trade architectural correctness for calendar speed.**
+
+The rules are the guiding light. Calendar pressure is not. Every choice —
+what to build, what to fix, what to refactor, when to surface a finding —
+gets made against the rules, never against the clock.
+
+**What this rule forbids:**
+- Recommending the smaller-scope path BECAUSE it's smaller.
+- Recommending a subset / scope-reduce / minimum-viable variant when the
+  comprehensive path is the architecturally correct one.
+- Framing a calendar overrun as a cost to weigh against correctness.
+- Using "this will take longer" as a counter-argument to "this is correct."
+- Deferring correctness to a "follow-up arc" because it would extend the
+  current arc.
+- "We can fix it later" — there is no later that is cheaper than now.
+- "Good enough for the deadline" — there is no deadline. There is only
+  correct or not-yet-correct.
+
+**The only legitimate inputs to a path choice:**
+1. Architectural correctness (the rules are the guiding light)
+2. Risk of unobserved bugs propagating to the next phase
+3. Whether the path satisfies this file's rules or violates them
+
+Calendar estimates are descriptive (data), not normative (decision
+criteria). It is fine to quote "this will take ~2 days" as information. It
+is not fine to recommend Path B over Path A because "B is ~half a day."
+
+**When you catch yourself** writing "this scope-reduces nicely," "we're
+already over budget," "let's defer X to a follow-up arc," or any framing
+that puts calendar weight on a correctness decision — STOP. Re-evaluate
+against the rules. The rules win every time. Calendar pressure is the most
+common rationalization for breaking the other rules — name it explicitly
+and refuse it.
+
+## ⚠️ ABSOLUTE RULE — TRACE WEAK SIGNALS TO ROOT CAUSE ⚠️
+
+**When something doesn't sit right, stop and trace it to root cause, even
+if the root cause is bigger than the bug.** Working-looking code that
+papers over a weak signal quietly carries a load-bearing bug into the next
+phase. The architectural cost of tracing now is always less than the cost
+of the load-bearing bug it would have hidden.
+
+**THE RULES:**
+1. If a result is "close enough but not quite," that's the signal. Trace it.
+2. If a fix works but you can't say why, you don't have a fix — you have a
+   coincidence. Trace it.
+3. If a workaround would let you ship without understanding the failure,
+   the workaround IS the bug. Trace it.
+4. If you find yourself thinking "this is good enough for now, we'll
+   revisit later," STOP. Surface it to <FILL-IN: operator name> before
+   continuing.
+5. Pivots that come out of traced root causes are upgrades, not retreats.
+   Treat them as strategic gifts, not budget overruns.
+
+<FILL-IN: as this project accumulates its own traced-root-cause case
+studies — the bug that looked like a tuning problem and was an
+architectural fault — record them here. Concrete local case studies are
+what keep this rule alive.>
+
+**Violations of this rule are how foundations crack. Every phase rests on
+the one below it; a quiet bug now becomes a crisis later. Trace now.**
+
+## ⚠️ ABSOLUTE RULE — INVENTORY BEFORE INVENTING ⚠️
+
+Before proposing any new storage, new subsystems, or architectural changes,
+first inventory what already exists in the system that could solve the
+problem. Check what's stored in existing state, what's computed in existing
+code paths, and what's available in existing module outputs. The correct
+solution often uses data that's already there. Only propose new
+infrastructure after confirming that no existing data can solve the
+problem.
+
+<FILL-IN: if the project keeps a capability inventory doc (list of every
+flag / subsystem / dormant mechanism), name it here and make reading it
+REQUIRED before proposing new mechanisms. Rediscovering an
+already-built-but-dormant subsystem is the classic failure this rule
+prevents.>
+
+## ⚠️ MANDATORY TASK REVIEW PROTOCOL ⚠️
+
+**After completing EVERY coding task, you MUST perform a self-review BEFORE
+moving on.** This protocol exists because agents have a pattern of writing
+"simplified" or "proxy" code instead of faithful implementations.
+
+**THE REVIEW CHECKLIST (run after every task):**
+1. Read back every line you wrote in this task.
+2. Search for these red-flag words: "simplified", "proxy", "approximate",
+   "for now", "TODO", "placeholder", "omitted", "stub", "skip",
+   "hardcoded".
+3. For each line: does the code do EXACTLY what the spec / source it ports
+   / plan says it should do?
+4. Are there any magic numbers that should come from config or the source
+   of truth?
+5. Are there any empty function bodies or early returns?
+6. Did you leave any incomplete loops or partially-handled cases?
+
+**If ANY check fails:** Fix it BEFORE moving to the next task. Do NOT
+proceed with known shortcuts.
+
+**Format:** After each task, output a REVIEW section:
+```
+REVIEW — [task name]:
+- Lines written: [count]
+- Red flags found: [list or "none"]
+- Spec/source match verified: [yes/no, with specifics]
+- Proceeding: [yes/no]
+```
+
+**Violations of this protocol will be treated as violations of the
+no-shortcutting rule.**
+
+## Project Overview
+
+<FILL-IN: what this project is, its core thesis, and its current phase.>
+
+**Key Files:**
+- `PRINCIPLES.yaml` — inviolable project principles (<FILL-IN: write this
+  file; keep it small; mark severity on each principle>)
+- <FILL-IN: state file / experiment tracker / other canonical files>
+
+## Core Principles (Summary)
+
+Full details in `PRINCIPLES.yaml`. The critical ones:
+
+<FILL-IN: the 3–5 principles that must never be violated, with the common
+violations named explicitly — naming the tempting violation is what makes
+the principle enforceable.>
+
+## Session Start Protocol
+
+At session start, the memory stack self-injects — you do NOT call any tool:
+1. **Read the SessionStart injection** — the claude-mem hook renders the
+   curated memory block plus the memory-health gate line (see `## Memory &
+   Ledger Discipline`).
+2. **Re-read the invariants** at the start of any arc or design pass —
+   passive injection gets skimmed; the invariant files exist to be actively
+   re-read.
+3. **Check runtime health before architecture** — a fresh grep/Read of the
+   code and terminal output beats any narrative doc for "what is true now"
+   (ground-truth hierarchy).
+4. **Trust the checkpoint** — do NOT re-verify things the resume anchor
+   says are done.
+
+## Tech Stack
+
+<FILL-IN: languages, frameworks, versions.>
+
+## Project Structure (Key Files)
+
+<FILL-IN: the annotated tree of load-bearing paths.>
+
+## Common Commands
+
+<FILL-IN: run / test / deploy commands.>
+
+## When Stuck
+
+1. Check the resume anchor (the `## ⏯ LATEST` entry in MEMORY.md) for
+   current state.
+2. Read the arc ledger (`.superpowers/sdd/progress.md`) for the last
+   verdicts.
+3. Ask claude-mem for prior context: `claude-mem search "<question>"`.
+4. Read `PRINCIPLES.yaml` and re-read the invariants if unsure about
+   approach.
+5. Grep/Read the actual code — it is ground truth for "what is true now."
+
+## Definition of Done
+
+A task is done when:
+- [ ] Verified against the ⚠️ ABSOLUTE RULES and PRINCIPLES.yaml (no
+      violations)
+- [ ] Self-review run (the MANDATORY TASK REVIEW PROTOCOL: red-flag scan +
+      faithful-implementation check)
+- [ ] Tests pass (if applicable)
+- [ ] The decision/verdict appended to the arc ledger
+      (`.superpowers/sdd/progress.md`)
+- [ ] Committed with the `Co-Authored-By` trailer (never pushed unless
+      asked)
+
+## Memory & Ledger Discipline
+
+The memory stack is self-injecting and self-monitoring. There is no bot to
+call.
+
+- **MEMORY.md is auto-injected** at SessionStart (the `## ⏯ LATEST` resume
+  anchor + the curated claude-mem render). Its `## INVARIANTS` section
+  links the first-class invariant files (`invariant_*.md` in the memory
+  dir). **The invariants ritual: actively re-read them at every arc
+  boundary and before any design pass** — passive injection gets skimmed.
+  The invariants carry the load-bearing "why" that machinery cannot
+  recover if it decays.
+- **One append-only ledger per arc.** A single markdown file
+  (`.superpowers/sdd/progress.md` pattern) the arc appends to at every
+  decision, gate verdict, or halt. Append; never rewrite history. On
+  resume, read the ledger tail FIRST so you do not re-dispatch completed
+  work.
+- **History questions → claude-mem CLI.** For "have we done X / what did we
+  decide about Y," query the hybrid (BM25 + vector) index rather than
+  re-deriving: `claude-mem search "your question"`.
+- **The memory-health gate line appears at SessionStart** (`MEMORY-HEALTH:
+  N/10 GREEN`). GREEN = the stack is live. **RED means
+  fix-before-proceeding** — a red check names the broken store and its fix
+  hint; silent memory-system death is the failure mode this gate exists to
+  prevent.
+- **Memory file naming convention** (one file per durable fact, ONE-line
+  index entry in MEMORY.md): `invariant_*.md` (first-class, re-read at arc
+  boundaries) · `feedback_*.md` (hard rules / corrections from the
+  operator) · `project_*.md` (load-bearing architectural facts and plans) ·
+  `reference_*.md` (how to use a tool) · `checkpoint_YYYY_MM_DD_*.md`
+  (resume anchors) · `process_*.md` (operational how-to knowledge).
+
+---
+
+*For full details, see:*
+- *Principles: `PRINCIPLES.yaml`*
+- *Current state: <FILL-IN: state file>*

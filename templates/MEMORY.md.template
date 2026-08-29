@@ -1,0 +1,56 @@
+# Project Memory - <FILL-IN: project name>
+
+> **ONE LINE per memory.** Each entry's detail lives in its linked file in
+> this directory — the line is an index pointer, not the record. Keep
+> entries to ONE line. When a section is superseded, retitle it
+> `## SUPERSEDED ...` — the kit's memory_decay hook auto-archives such
+> sections to `MEMORY_ARCHIVE.md` at session start; never let this file
+> grow past its injection budget.
+
+## ⏯ LATEST (<FILL-IN: YYYY-MM-DD>) — <FILL-IN: one-line arc state headline> — RESUME HERE
+- **🏁 [THE ANCHOR = <FILL-IN: checkpoint_YYYY_MM_DD_slug>](checkpoint_<FILL-IN: YYYY_MM_DD_slug>.md) — READ IT FIRST; then the LEDGER TAIL (`.superpowers/sdd/progress.md`).** <FILL-IN: NEXT = the exact next actions, pre-authorized or gated, with commits/verdicts inline.>
+- <FILL-IN: keep the previous era's anchor as a second line ("PRIOR ANCHOR = ...") so compaction never severs the chain; demote older anchors into the era sections below.>
+
+<!--
+RESUME-ANCHOR PATTERN: the `## ⏯ LATEST` section is the first thing every
+session reads. It must always carry (a) THE ANCHOR — a link to the current
+checkpoint file, (b) the NEXT action queue, and (c) enough inline verdicts
+(commit hashes, gate results) that a fresh session can act without
+re-deriving. Update it at every checkpoint; move displaced lines down into
+an era section rather than deleting them.
+-->
+
+## INVARIANTS — read at every arc boundary
+- [<FILL-IN: invariant title>](invariant_<FILL-IN: slug>.md) — <FILL-IN: the one-line statement of the invariant and its "why".>
+- <FILL-IN: 2–6 first-class invariants total. These are the load-bearing
+  "why" of the project — the principles that machinery cannot recover if
+  they decay. Each lives in its own `invariant_*.md` file (see
+  templates/memory_file_examples/).>
+
+## START HERE — overall goal (combats cross-compaction forgetting)
+- [<FILL-IN: "what have we built" atlas](project_<FILL-IN: slug>.md) — **READ FIRST** for "what have we built / didn't we already build X".
+- [<FILL-IN: north-star / destination doc](project_<FILL-IN: slug>.md) — <FILL-IN: the one-line north star.>
+
+## Tools & references (USE THESE)
+- [claude-mem hybrid search](reference_claude_mem_usage.md) — default for any history / "have we done X" question; it IS installed.
+- <FILL-IN: one line per project tool, each linking a reference_*.md file.>
+
+## Hard rules from <FILL-IN: operator name> (operational discipline)
+- <FILL-IN: one line per hard rule, each linking a feedback_*.md file.>
+
+## Load-bearing architectural facts
+- <FILL-IN: one line per fact, each linking a project_*.md file.>
+
+## Process knowledge
+- <FILL-IN: one line per operational how-to, each linking a process_*.md file.>
+
+<!--
+NAMING CONVENTION (one file per durable fact; frontmatter carries
+name/description/metadata.type — see templates/memory_file_examples/):
+  invariant_*.md  — first-class principles; re-read at every arc boundary
+  feedback_*.md   — hard rules / corrections from the operator
+  project_*.md    — load-bearing architectural facts, plans, decisions
+  reference_*.md  — how to use a tool or external resource
+  checkpoint_YYYY_MM_DD_*.md — resume anchors (linked from ⏯ LATEST)
+  process_*.md    — operational how-to knowledge
+-->

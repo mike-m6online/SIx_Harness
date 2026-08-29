@@ -1,0 +1,28 @@
+# Arc Ledger — <FILL-IN: arc name>
+
+> **APPEND-ONLY.** This file is the arc's single running ledger. The
+> discipline:
+>
+> 1. **Append at every decision, gate verdict, or halt.** Never rewrite,
+>    reorder, or delete history — a corrected verdict gets a NEW entry
+>    that supersedes the old one by date, with the old entry left intact.
+> 2. **On resume, read the ledger TAIL first** so you do not re-dispatch
+>    completed work. The tail is the arc's authoritative "where are we".
+> 3. **One ledger per arc.** When an arc closes, open a fresh ledger for
+>    the next arc and link the closed one from its opening entry; the
+>    closing entry names the closure doc / checkpoint that carries the
+>    arc's full record.
+> 4. **Each entry carries:** date · what was decided/verified · the
+>    verdict (PASS/FAIL/BLOCKED/RULED) · pointers to the detail (doc path,
+>    commit hash, test command).
+>
+> Why append-only: rewritten history is how drift enters — a "cleaned up"
+> ledger silently erases the failed attempt the next session needed to
+> know about. The ledger is evidence, not narrative.
+
+---
+
+## <FILL-IN: YYYY-MM-DD> — arc opened
+- Goal: <FILL-IN: what this arc must produce, in one line.>
+- Plan: <FILL-IN: link to the spec/plan doc this arc executes.>
+- Prior arc: <FILL-IN: link to the previous arc's ledger/closure doc, or "none (first arc)".>

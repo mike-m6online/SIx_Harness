@@ -1,0 +1,17 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Test caches
+.pytest_cache/
+
+# Packaging artifacts
+*.egg-info/
+dist/
+build/
+
+# Per-project claude-mem state (index/telemetry DBs) — never vendored
+.claude-mem/
+
+# The kit's own virtualenv (created by install.py) — machine-local, never shipped
+.venv/

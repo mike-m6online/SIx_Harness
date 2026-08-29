@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "six-harness"
+version = "0.2.0"
+description = "Memory and continuity harness for Claude Code: per-project long-term memory (claude-mem), self-injecting session hooks, a memory-health gate, and project-discipline templates"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "pyyaml>=6.0",
+    "rank-bm25>=0.2",
+    "sqlite-vec>=0.1",
+    "nltk>=3.8",
+    "watchdog>=3.0",
+    "httpx>=0.25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+]
+
+[project.scripts]
+claude-mem = "claude_mem.cli:cli"
+harness = "harness.init:main"
+
+[tool.setuptools.packages.find]
+include = ["claude_mem*", "harness*"]
