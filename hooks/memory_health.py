@@ -770,10 +770,25 @@ def check_module_state_age(paths: HealthPaths) -> CheckResult:
 
 
 def check_graphify_corpus_age(paths: HealthPaths) -> CheckResult:
-    """Check 7: the graphify corpus (newest file under the first existing
-    graphify out-dir) must be <= 21 days old. Missing entirely -> RED with a
-    fix hint pointing at the --graphify-dir flag."""
+    """Check 7: freshness of the graphify structural-query corpus (an
+    OPTIONAL integration -- github.com/Graphify-Labs/graphify): the newest
+    file under the first existing registered out-dir must be <= 21 days
+    old.
+
+    Contract (0.2.1): the check watches only what the operator WIRED.
+    Nothing registered via --graphify-dir -> GREEN with a "not wired"
+    note -- an integration that was never configured cannot be dead, and
+    a permanent RED on a fresh install teaches operators to skim the
+    gate line (the exact alert-fatigue failure this gate exists to
+    prevent). Registered-but-missing/empty stays RED: the operator wired
+    it, so its absence is genuine breakage."""
     name = "graphify_corpus_age"
+    if not paths.graphify_dirs:
+        return CheckResult(
+            name, True,
+            "graphify not wired (optional; register an extracted corpus "
+            "with --graphify-dir)", "",
+        )
     missing_fix = ("graphify corpus absent -- point --graphify-dir at an "
                    "extracted corpus (or run the graphify extract for this "
                    "project)")

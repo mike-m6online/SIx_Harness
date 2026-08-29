@@ -21,6 +21,8 @@ A local, private memory core — no cloud services, no API keys; embeddings and 
 - **Decision & dead-end capture**: at session end, the capture pipeline extracts candidate decisions and dead-ends from the transcript; you triage them (`claude-mem capture-triage` — confirm / reject / retitle in one batch) so the anti-recurrence record stays curated, not scraped.
 - **Corrections extraction**: operator corrections ("no, do it this way") are first-class records, re-surfaced at session start so the same mistake doesn't get made twice.
 
+**No graph database inside** — the index is deliberately plain SQLite; the closest in-harness graph structure is the decision/dead-end → thread lineage links. For *structural* questions ("what links to X, what depends on Y") the harness pairs with **[graphify](https://github.com/Graphify-Labs/graphify)** as an optional external tool: you run its extract over your docs into a corpus dir, query it with its own CLI, and register the corpus with the gate's `--graphify-dir` flag — check 7 then watches corpus freshness (a stale graph silently answering structural questions is the same failure class as a dead vector leg). Not wired, the check reports green with a note; the harness never bundles or invokes graphify itself.
+
 ### 2. Self-injecting session context
 
 - **SessionStart curated render**: a hard-capped, high-signal block — invariants, recent corrections, recent confirmed decisions, capture-triage debt, and the latest health-gate verdict. Rotation-aware: least-recently-shown corrections surface first, so the same five lines don't greet you forever. A novelty guard hashes the stable content and flags a frozen render across sessions.

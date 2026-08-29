@@ -312,6 +312,10 @@ def test_empty_project_renders_reds_and_exits_0(run_hook, tmp_path):
         "memory_health.py",
         "--project-root", root,
         "--memory-dir", memory_dir,
+        # Registered-but-missing dir: keeps check 7's RED path exercised
+        # under the 0.2.1 contract (not-wired is GREEN and has its own
+        # tests below).
+        "--graphify-dir", root / "no_such_graphify",
         "--ollama-endpoint", _closed_endpoint(),
     )
     assert proc.returncode == 0  # report-only, NEVER a gate
@@ -330,6 +334,34 @@ def test_empty_project_renders_reds_and_exits_0(run_hook, tmp_path):
     # explicitly -- with no CLAUDE.md the check reports missing.
     assert "RED claude_md_deprecated:" in out and "missing" in out
     assert "RED embedding_path: Ollama server unreachable" in out
+
+
+# --------------------------------------------------------------------------
+# check 7: optional-integration contract (0.2.1)
+# --------------------------------------------------------------------------
+def test_graphify_not_wired_is_green_with_note(tmp_path):
+    """No --graphify-dir registered at all: the integration was never
+    configured, so the check reports GREEN with the wiring note -- a
+    fresh install must not carry a permanent RED for an optional tool."""
+    paths = mh.HealthPaths.from_cli(
+        project_root=tmp_path / "p", memory_dir=tmp_path / "m",
+    )
+    result = mh.check_graphify_corpus_age(paths)
+    assert result.ok
+    assert "not wired" in result.detail
+    assert "--graphify-dir" in result.detail
+
+
+def test_graphify_registered_but_missing_red(tmp_path):
+    """A registered dir that does not exist is genuine breakage -- the
+    operator wired the integration and it is gone."""
+    paths = mh.HealthPaths.from_cli(
+        project_root=tmp_path / "p", memory_dir=tmp_path / "m",
+        graphify_dirs=(tmp_path / "gone",),
+    )
+    result = mh.check_graphify_corpus_age(paths)
+    assert not result.ok
+    assert "no graphify out-dir found" in result.detail
 
 
 # --------------------------------------------------------------------------
