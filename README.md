@@ -1,4 +1,14 @@
-# SIx Harness
+<p align="center">
+  <img src="assets/banner.svg" alt="SIx Harness — memory and continuity for Claude Code" width="880">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/tests-580%20passing-3fb950?style=flat-square" alt="580 tests passing">
+  <img src="https://img.shields.io/badge/python-3.10%2B-58a6ff?style=flat-square" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/inference-100%25%20local%20(Ollama)-8957e5?style=flat-square" alt="100% local inference">
+  <img src="https://img.shields.io/badge/shakedown-9%20days%20instrumented-d29922?style=flat-square" alt="9-day instrumented shakedown">
+  <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
+</p>
 
 **A memory and continuity harness for [Claude Code](https://claude.com/claude-code): per-project long-term memory, self-injecting session context, and a health gate that makes silent memory-system death structurally impossible.**
 
@@ -6,7 +16,27 @@ Long-running agentic projects fail in ways that have nothing to do with model qu
 
 SIx Harness is the working discipline that grew inside a multi-year AI research project — where a single Claude Code session line has run for months across hundreds of compactions — packaged so any project can drop it on. Everything in it exists because one of those failures actually happened, got traced to root cause, and got a structural fix.
 
-**v0.2.0** — hardened by a 9-day instrumented live shakedown ([operational record](#operational-record-the-9-day-shakedown) below).
+<p align="center">
+  <img src="assets/demo.svg" alt="Animated demo: session start renders the health gate and curated memory; a build-intent prompt triggers a DO-NOT-REBUILD warning; an ordinary prompt gets silence" width="760">
+</p>
+
+## The session, end to end
+
+```mermaid
+flowchart LR
+    subgraph start["SessionStart"]
+        A["memory_decay<br/>MEMORY.md budget + archive"] --> B["memory_health<br/>N/N GREEN gate"] --> C["curated render<br/>invariants · corrections · decisions"]
+    end
+    subgraph loop["Every prompt"]
+        D{"intent<br/>detected?"} -- "no" --> E["silence<br/>(p50: 0 ms)"]
+        D -- "build / investigate / decide" --> F["IDF relevance gates<br/>+ per-session damping"] --> G["DO-NOT-REBUILD ·<br/>stale-claim · lineage blocks"]
+    end
+    subgraph end_["SessionEnd"]
+        H["ingest transcript"] --> I["capture decisions<br/>+ dead-ends"] --> J["operator triage<br/>(confirm / reject)"]
+    end
+    start --> loop --> end_
+    J -. "next session starts smarter" .-> start
+```
 
 ---
 
@@ -21,13 +51,13 @@ A local, private memory core — no cloud services, no API keys; embeddings and 
 - **Decision & dead-end capture**: at session end, the capture pipeline extracts candidate decisions and dead-ends from the transcript; you triage them (`claude-mem capture-triage` — confirm / reject / retitle in one batch) so the anti-recurrence record stays curated, not scraped.
 - **Corrections extraction**: operator corrections ("no, do it this way") are first-class records, re-surfaced at session start so the same mistake doesn't get made twice.
 
-**No graph database inside** — the index is deliberately plain SQLite; the closest in-harness graph structure is the decision/dead-end → thread lineage links. For *structural* questions ("what links to X, what depends on Y") the harness pairs with **[graphify](https://github.com/Graphify-Labs/graphify)** as an optional external tool: you run its extract over your docs into a corpus dir, query it with its own CLI, and register the corpus with the gate's `--graphify-dir` flag — check 7 then watches corpus freshness (a stale graph silently answering structural questions is the same failure class as a dead vector leg). Not wired, the check reports green with a note; the harness never bundles or invokes graphify itself.
+**No graph database inside** — the index is deliberately plain SQLite; the closest in-harness graph structure is the decision/dead-end → thread lineage links. For structural questions, the harness pairs with an external graph tool — see [Pairing with graphify](#pairing-with-graphify-structural-queries).
 
 ### 2. Self-injecting session context
 
 - **SessionStart curated render**: a hard-capped, high-signal block — invariants, recent corrections, recent confirmed decisions, capture-triage debt, and the latest health-gate verdict. Rotation-aware: least-recently-shown corrections surface first, so the same five lines don't greet you forever. A novelty guard hashes the stable content and flags a frozen render across sessions.
 - **Prompt-time targeted injection**: when a prompt shows *build*, *investigate*, or *decision* intent, the harness checks the index for existing subsystems ("DO NOT REBUILD" warnings), stale claims, and decision lineage — and injects only what passes IDF-based relevance gates (summed rarity threshold, word-boundary match minimums) plus per-session damping. The design goal is a retrieval layer you never learn to skim: silence on ordinary turns, signal when it fires.
-- **System-turn exemption** (new in 0.2.0): agent-completion callbacks and other machine-generated turns get no injection work at all — live telemetry showed such turns attracting topically-matched-but-useless blocks.
+- **System-turn exemption**: agent-completion callbacks and other machine-generated turns get no injection work at all — live telemetry showed such turns attracting topically-matched-but-useless blocks.
 - **Memory maintenance**: a SessionStart decay pass keeps the `MEMORY.md` index inside line/byte budgets, archives what falls out, and reports orphaned memory files instead of silently losing them.
 
 ### 3. The memory-health gate
@@ -38,14 +68,22 @@ One line at every session start:
 MEMORY-HEALTH: 11/11 GREEN
 ```
 
-Eleven checks probe the whole stack — ingest watermark freshness, vector coverage, hook heartbeats (did every hook that should have fired actually fire?), capture-queue depth, lineage cache age, memory-file/index integrity, session-render novelty, and an **end-to-end embedding probe** that discriminates its failure modes: server unreachable vs. model missing vs. cold load vs. wedged, each with a matching fix hint. RED means fix-before-proceeding; the hint tells you how.
+Eleven checks probe the whole stack — ingest watermark freshness, vector coverage, hook heartbeats (did every hook that should have fired actually fire?), capture-queue depth, lineage cache age, memory-file/index integrity, session-render novelty, and an **end-to-end embedding probe** that discriminates its failure modes, each with a matching fix hint:
 
-The gate's design premise: **silence is not success.** A memory system that dies quietly is worse than one that never existed, because you keep trusting it.
+```mermaid
+flowchart TD
+    P["embed probe"] --> Q{"result?"}
+    Q -- "server down" --> R["RED — 'start Ollama'"]
+    Q -- "model absent" --> S["RED — 'ollama pull …'"]
+    Q -- "timeout" --> T["ONE 30 s warm-up retry"]
+    T -- "answers" --> U["GREEN — 'cold start:<br/>warmed in 8.2 s'"]
+    T -- "still dead" --> V["RED — 'server wedged /<br/>model cannot load'"]
+    Q -- "answers" --> W{"vector width matches<br/>the pinned index?"}
+    W -- "yes" --> X["GREEN"]
+    W -- "no" --> Y["RED — dimension guard<br/>would refuse every insert"]
+```
 
-New in 0.2.0, from the shakedown:
-
-- **Self-warming probe** — a cold Ollama after an idle gap gets one generous warm-up window before any verdict; you see `GREEN … (cold start: warmed in 8.2s)` instead of a RED whose only advice is "retry".
-- **Configuration validation at gate time** — a configured fallback embedding model whose vector width can't match the index (checked via `/api/show` metadata, loading nothing) is called out the day you configure it, not the day it silently taxes a failure path. The primary model's width is validated against the pinned index width on every probe.
+RED means fix-before-proceeding; the hint tells you how. The design premise: **silence is not success.** A memory system that dies quietly is worse than one that never existed, because you keep trusting it. The complementary rule, learned live: a RED that isn't actionable is alert fatigue — so optional integrations that were never wired report green-with-a-note, cold starts self-warm before verdicting, and misconfigurations (like a fallback embedding model whose vector width can never match the index) are caught at *config* time via model metadata, not at failure time.
 
 ### 4. Telemetry-first instrumentation
 
@@ -69,7 +107,7 @@ The code enforces what it can; the templates carry the discipline that code can'
 
 ## Operational record: the 9-day shakedown
 
-v0.2.0's fixes come from running this exact stack as the daily driver on the origin project — a large research codebase with a months-long continuous session line — with the telemetry as judge. Numbers from the instrument, 2026-08-19 → 2026-08-28:
+v0.2's fixes come from running this exact stack as the daily driver on the origin project — a large research codebase with a months-long continuous session line — with the telemetry as judge. Numbers from the instrument, 2026-08-19 → 2026-08-28:
 
 | Measure | Result |
 |---|---|
@@ -167,6 +205,28 @@ claude-mem maintenance                           # prune + integrity passes
 
 ---
 
+## Pairing with graphify (structural queries)
+
+The memory core answers *history* questions ("have we done X? what did we decide about Y?"). For *structural* questions — "what links to X, what depends on Y, where does Z sit in the dependency graph" — the harness pairs with **[graphify](https://github.com/Graphify-Labs/graphify)**, an external tool that turns a codebase-plus-docs into a queryable knowledge graph. The harness never bundles or invokes it; the integration is a working loop plus one gate check:
+
+**The loop, as run on the origin project:**
+
+1. **Extract** the docs corpus into a versioned out-dir (fully local, via Ollama):
+   ```
+   graphify extract D:\myproject\docs --backend ollama --model <ctx-pinned-model> \
+     --max-concurrency 1 --token-budget 4096 --out C:\graphify_corpora\docs_v1
+   ```
+   Two settings are load-bearing when a *local* model serves the extraction, both learned the expensive way:
+   - **Keep `--token-budget` small** (~4K). Default-sized chunks produce requests a local model cannot answer inside the timeout — a large corpus went 0-for-26 chunks in 10 hours at the default, then 365-for-367 in one evening at 4K.
+   - **Pin the model's context length** by creating a derived Ollama model (`FROM <base>` + `PARAMETER num_ctx 16384`). Some serving paths ignore per-request context options, so the base model loads at its full default context, overflows GPU residency, and times out on even small chunks; the pinned variant stays fully GPU-resident.
+2. **Verify before trusting**: chunk-failure count in the extract log (healthy runs are <1%), node/edge counts in the same order as the previous corpus, and one live query returning real nodes from real source files.
+3. **Query** during work: `graphify query "what depends on the ingest queue?" --graph <out>/graphify-out/graph.json`.
+4. **Let the gate watch it**: register the corpus with `--graphify-dir` on the `memory_health` hook, and check 7 goes RED when the newest file ages past 21 days — a stale graph silently answering structural questions is the same failure class as a dead vector leg. Re-extract into a *fresh* out-dir and re-point, so the old graph stays intact until the new one verifies.
+
+Not using graphify? Check 7 reports green with a "not wired" note — an optional integration that was never configured cannot be dead.
+
+---
+
 ## Architecture
 
 ```
@@ -182,6 +242,7 @@ six-harness/
 ├── harness_tests/     # its tests
 ├── templates/         # CLAUDE.md / MEMORY.md / ledger templates, memory-file
 │                      #   frontmatter examples, gen_project_state stub
+├── assets/            # README art (self-contained SVG)
 └── install.py         # one-command installer (venv + init + ingest)
 ```
 
@@ -202,7 +263,7 @@ six-harness/
 python -X utf8 -m pytest claude_mem_tests hooks_tests harness_tests -q
 ```
 
-578 tests, all offline — Ollama is faked at the HTTP layer, so the suite runs anywhere Python does.
+580 tests, all offline — Ollama is faked at the HTTP layer, so the suite runs anywhere Python does.
 
 ## Provenance & license
 

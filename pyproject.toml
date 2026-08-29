@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "six-harness"
-version = "0.2.0"
+version = "0.2.2"
 description = "Memory and continuity harness for Claude Code: per-project long-term memory (claude-mem), self-injecting session hooks, a memory-health gate, and project-discipline templates"
 requires-python = ">=3.10"
 dependencies = [

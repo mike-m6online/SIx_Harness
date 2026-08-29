@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 190" role="img" aria-label="SIx Harness — memory and continuity for Claude Code">
+<style>
+text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@keyframes fill{0%{fill:#21262d}6%{fill:#3fb950}88%{fill:#3fb950}94%{fill:#21262d}100%{fill:#21262d}}
+@keyframes verdict{0%{opacity:0}42%{opacity:0}48%{opacity:1}88%{opacity:1}94%{opacity:0}100%{opacity:0}}
+.d0{animation:fill 9s linear infinite;animation-delay:0.00s}
+.d1{animation:fill 9s linear infinite;animation-delay:0.35s}
+.d2{animation:fill 9s linear infinite;animation-delay:0.70s}
+.d3{animation:fill 9s linear infinite;animation-delay:1.05s}
+.d4{animation:fill 9s linear infinite;animation-delay:1.40s}
+.d5{animation:fill 9s linear infinite;animation-delay:1.75s}
+.d6{animation:fill 9s linear infinite;animation-delay:2.10s}
+.d7{animation:fill 9s linear infinite;animation-delay:2.45s}
+.d8{animation:fill 9s linear infinite;animation-delay:2.80s}
+.d9{animation:fill 9s linear infinite;animation-delay:3.15s}
+.d10{animation:fill 9s linear infinite;animation-delay:3.50s}
+.verdict{animation:verdict 9s linear infinite}
+</style>
+<rect x="1" y="1" width="878" height="188" rx="14" fill="#0d1117" stroke="#30363d" stroke-width="2"/>
+<text x="44" y="80" font-size="46" font-weight="700" fill="#e6edf3">SIx Harness</text>
+<text x="46" y="116" font-size="16" fill="#8b949e">Memory &amp; continuity for Claude Code</text>
+<text x="46" y="142" font-size="14" fill="#8b949e">long-term memory · targeted injection · a health gate</text>
+<text x="46" y="170" font-size="13.5" class="mono" fill="#58a6ff">$ python install.py D:/myproject</text>
+<circle class="d0" cx="560" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d1" cx="585" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d2" cx="610" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d3" cx="635" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d4" cx="660" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d5" cx="685" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d6" cx="710" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d7" cx="735" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d8" cx="760" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d9" cx="785" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<circle class="d10" cx="810" cy="72" r="7" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+<text class="mono verdict" x="558" y="112" font-size="13.5" fill="#3fb950">MEMORY-HEALTH: 11/11 GREEN</text>
+</svg>
