@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/tests-580%20passing-3fb950?style=flat-square" alt="580 tests passing">
   <img src="https://img.shields.io/badge/python-3.10%2B-58a6ff?style=flat-square" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/inference-100%25%20local%20(Ollama)-8957e5?style=flat-square" alt="100% local inference">
-  <img src="https://img.shields.io/badge/shakedown-9%20days%20instrumented-d29922?style=flat-square" alt="9-day instrumented shakedown">
+  <img src="https://img.shields.io/badge/in%20production-since%20May%202026%20·%2078k%2B%20hook%20calls-d29922?style=flat-square" alt="In production since May 2026, 78k+ hook invocations logged">
   <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
 </p>
 
@@ -14,7 +14,7 @@
 
 Long-running agentic projects fail in ways that have nothing to do with model quality. Context gets compacted and the thread of a months-long effort snaps. The agent re-proposes a subsystem that already exists. A "helpful" retrieval layer sprays stale context onto every prompt until you learn to skim past it. The memory system itself dies quietly, and nobody notices for a week. Documentation decays while sounding authoritative.
 
-SIx Harness is the working discipline that grew inside a multi-year AI research project — where a single Claude Code session line has run for months across hundreds of compactions — packaged so any project can drop it on. Everything in it exists because one of those failures actually happened, got traced to root cause, and got a structural fix.
+SIx Harness is the working discipline that grew inside a long-running AI research project — where a single Claude Code session line has run for months across hundreds of compactions, driving a 630,000-line codebase — packaged so any project can drop it on. Everything in it exists because one of those failures actually happened, got traced to root cause, and got a structural fix.
 
 <p align="center">
   <img src="assets/demo.svg" alt="Animated demo: session start renders the health gate and curated memory; a build-intent prompt triggers a DO-NOT-REBUILD warning; an ordinary prompt gets silence" width="760">
@@ -105,9 +105,23 @@ The code enforces what it can; the templates carry the discipline that code can'
 
 ---
 
-## Operational record: the 9-day shakedown
+## Operational record
 
-v0.2's fixes come from running this exact stack as the daily driver on the origin project — a large research codebase with a months-long continuous session line — with the telemetry as judge. Numbers from the instrument, 2026-08-19 → 2026-08-28:
+This is not a fresh extraction shipped on hope — the stack accreted inside the origin project over months of daily production, fix by traced fix, and the numbers below are read from its own instruments and git history.
+
+### The long haul
+
+| | |
+|---|---|
+| In production | memory core since **May 2026** · the full gate + heartbeat telemetry since **July 2026** · the conventions it ships as templates since **January 2026** |
+| Lifetime instrumentation | **78,838 hook invocations** on the heartbeat record (July 2 → today), zero silent deaths |
+| The codebase it drives | **633,000+ lines** across ~1,900 code files (a CUDA/C++ research engine with a large Python orchestration layer), plus a 446-document corpus |
+| The memory it carries | **19,065 indexed chunks** · 389 curated memory files · **154 confirmed decisions + 186 recorded dead-ends** in the anti-recurrence store |
+| Continuity | one Claude Code session line across hundreds of compactions, resumed every time from the `⏯ LATEST` anchor |
+
+### The instrumented shakedown (v0.2)
+
+The current release's fixes come from a deliberately instrumented 9-day window — the same stack, daily-driver load, with the precision telemetry as judge. Numbers from the instrument, 2026-08-19 → 2026-08-28:
 
 | Measure | Result |
 |---|---|
@@ -267,6 +281,6 @@ python -X utf8 -m pytest claude_mem_tests hooks_tests harness_tests -q
 
 ## Provenance & license
 
-Extracted from, and still co-evolving with, a long-running AI research project where this stack is the daily driver for a Claude Code session line that has survived months of compactions. Fixes flow from live telemetry there into releases here.
+Extracted from, and still co-evolving with, a long-running AI research project where this stack has been the daily driver since May 2026 (conventions since January) for a Claude Code session line that has survived hundreds of compactions across a 630,000-line codebase. Fixes flow from live telemetry there into releases here.
 
 [MIT licensed](LICENSE).
