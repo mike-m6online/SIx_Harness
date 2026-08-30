@@ -116,7 +116,7 @@ This is not a fresh extraction shipped on hope — the stack accreted inside the
 | In production | memory core since **May 2026** · the full gate + heartbeat telemetry since **July 2026** · the conventions it ships as templates since **January 2026** |
 | Lifetime instrumentation | **78,838 hook invocations** on the heartbeat record (July 2 → today), zero silent deaths |
 | The codebase it drives | **633,000+ lines** across ~1,900 code files (a CUDA/C++ research engine with a large Python orchestration layer), plus a 446-document corpus |
-| The memory it carries | **19,065 indexed chunks** · 389 curated memory files · **154 confirmed decisions + 186 recorded dead-ends** in the anti-recurrence store |
+| The memory it carries | **19,065 indexed chunks** · 389 curated memory files · **154 decisions + 186 dead-ends** captured and triaged (59 + 47 confirmed — the rejections are the curation working) |
 | Continuity | one Claude Code session line across hundreds of compactions, resumed every time from the `⏯ LATEST` anchor |
 
 ### The instrumented shakedown (v0.2)
